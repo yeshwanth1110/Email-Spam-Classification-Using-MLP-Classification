@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+data=pd.read_csv(f"/emails.csv")
+data.shape
+data.head()
+data.drop(columns=['Email No.'], inplace=True)
+data.head()
+data.isnull().any().value_counts()
+X=data.iloc[:, :data.shape[1]-1]
+y=data.iloc[:, -1]
+X.shape, y.shape
+X=data.iloc[:, :data.shape[1]-1]
+y=data.iloc[:, -1]
+X.shape, y.shape
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test=train_test_split(X, y, test_size=0.15, random_state=8)
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC, LinearSVC
+from sklearn.neural_network import MLPClassifier
+models={"Logistic Regression": LogisticRegression(random_state=8, solver='lbfgs', max_iter=2000),
+        "Linear SVM":LinearSVC(random_state=8, max_iter=3000),
+        "Polynomical SVM":SVC(kernel="poly", degree=2, random_state=8),
+        "RBF SVM":SVC(kernel="rbf", random_state=8),
+        "Sigmoid SVM":SVC(kernel="sigmoid", random_state=8),
+        "Multi-layer Perceptron Classification": MLPClassifier(hidden_layer_sizes=[20, 20], \
+                                                           learning_rate='adaptive', random_state=8)}
+                                                          
+from sklearn.metrics import accuracy_score
+for model_name, model in models.items():
+    y_pred=model.fit(X_train, y_train).predict(X_test)
+    print(f"Accuracy for {model_name} model : {accuracy_score(y_test, y_pred)}")
